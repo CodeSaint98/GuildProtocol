@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity ^0.8.0;
 
-import "./CallistoToken.sol";
+import "./GuildToken.sol";
 
-contract CallistoFreelancer {
+contract GuildFreelancer {
     /*
-     1. Allows a client to buy callisto tokens.
+     1. Allows a client to buy Guild tokens.
      2. Proposal function allows clients to list a proposal
         - stores client address
         - stores bounty amount that includes a tip amount
@@ -30,17 +30,23 @@ contract CallistoFreelancer {
         - Client is blacklisted if they do not pay on time.
     */
     // STATE VARIABLES
-    address public callisto_token_address;
+    address public guild_token_address;
     uint public time_limit;
-    CallistoToken private callisto_token;
+    GuildToken private guild_token;
     constructor(
-        address _callisto_token_address,
+        address _guild_token_address,
         uint _time_limit
     ){
-        require((_callisto_token_address != address(0))
+        require((_guild_token_address != address(0))
         &&(_time_limit != 0), "Zero Address detected");
-        callisto_token = CallistoToken(_callisto_token_address);
-        callisto_token_address = _callisto_token_address;
+        guild_token = GuildToken(_guild_token_address);
+        guild_token_address = _guild_token_address;
         time_limit = _time_limit;
+    }
+
+    //allows users to purchase the guild token
+    function purchaseGuildToken(uint amount) public payable{
+      require(amount !=0, "Zero value detected");
+      
     }
 }

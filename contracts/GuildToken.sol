@@ -6,20 +6,20 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '../Utils/Owned.sol';
 
-contract CallistoToken is ERC20, Owned{
+contract GuildToken is ERC20, Owned{
 
     /* ========== MODIFIERS ========== */
     modifier onlyByOwner(){
         require(msg.sender == owner, "You are not the owner");
         _;
     }
-    modifier onlyCallistoPool(){
-        require(msg.sender == callisto_pool_address, "Only the pool can mint and burn tokens");
+    modifier onlyGuildPool(){
+        require(msg.sender == guild_pool_address, "Only the pool can mint and burn tokens");
         _;
     }
 
     /* ========= STATE VARIABLES ====== */
-    address public callisto_pool_address;
+    address public guild_pool_address;
     address public smartcontract_owner;
     uint public genesis_supply;
     
@@ -38,8 +38,12 @@ contract CallistoToken is ERC20, Owned{
         smartcontract_owner = _smartcontract_owner;
     }
 
-    function setCallistoPool(address _callisto_pool_address) public onlyOwner{
-        require(_callisto_pool_address != address(0), "Zero address detected");
-        callisto_pool_address = _callisto_pool_address;
+    function setGuildPool(address _guild_pool_address) public onlyOwner{
+        require(_guild_pool_address != address(0), "Zero address detected");
+        guild_pool_address = _guild_pool_address;
+    }
+
+    function eth_usd_price() public pure returns(uint){
+        return 1227990000;
     }
 }
