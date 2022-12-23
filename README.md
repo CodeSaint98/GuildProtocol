@@ -1,4 +1,4 @@
-The callisto protocol aims to be a free-to-use freelancing forum. Open source and upgradeable can be and used by any party. This party
+The guild protocol aims to be an open-source freelancing forum. A third party
 will be responsible for client and freelancer vetting as well as quality of work done via their platform. Fees can be accumulated by
 third party to incentivize them to do this.
 The callisto protocol aims to be a single token system that doesn't store funds of any kind. There will be no middlemen between client

@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
-import '../Utils/Owned.sol';
+import './Utils/Owned.sol';
 
 contract GuildToken is ERC20, Owned{
 
@@ -34,7 +34,7 @@ contract GuildToken is ERC20, Owned{
         require(_smartcontract_owner != address(0), "Zero address detected");
         require(_genesis_supply != 0, "Zero value is detected");
         genesis_supply = _genesis_supply;
-        _mint(smartcontract_owner, genesis_supply);
+        _mint(_smartcontract_owner, genesis_supply);
         smartcontract_owner = _smartcontract_owner;
     }
 

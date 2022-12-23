@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity ^0.8.0;
 
+import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
 import "./GuildToken.sol";
 import "./IGuildLiquidityPool.sol";
+import "./Utils/IWETH.sol";
 
 contract GuildFreelancer {
     /*
@@ -33,24 +35,36 @@ contract GuildFreelancer {
     // STATE VARIABLES
     address public guild_token_address;
     address public guild_pool_address;
+    address public smartcontract_owner;
+    address public WETH_address;
     uint public time_limit;
     GuildToken private guild_token;
     IGuildLiquidityPool private guild_pool;
+    IWETH private WETH;
     constructor(
         address _guild_token_address,
-        uint _time_limit
+        address _guild_pool_address,
+        address _WETH,
+        uint _time_limit,
+        address _smartcontract_owner
     ){
         require((_guild_token_address != address(0))
+        &&(_guild_pool_address != address(0))
+        &&(_smartcontract_owner != address(0))
+        &&(_WETH != address(0))
         &&(_time_limit != 0), "Zero Address detected");
         guild_token = GuildToken(_guild_token_address);
         guild_token_address = _guild_token_address;
         time_limit = _time_limit;
+        guild_pool_address = _guild_pool_address;
+        guild_pool = IGuildLiquidityPool(_guild_pool_address);
+        WETH_address = _WETH;
+        WETH = IWETH(_WETH);
+        smartcontract_owner = _smartcontract_owner;
     }
 
-    function setGuildPool(address _guild_pool_address) public{
-      require(_guild_pool_address != address(0), "Zero address detected");
-      guild_pool_address = _guild_pool_address;
-      guild_pool = IGuildLiquidityPool(_guild_pool_address);
+    receive() external payable {
+        assert(msg.sender == WETH_address); // only accept ETH via fallback from the WETH contract
     }
 
    //returns guild token price with a precision of 1e6
@@ -64,6 +78,21 @@ contract GuildFreelancer {
       }
       return ((_eth_usd_price*reserve1)/reserve1);
 }
+
+   function creatorAddLiquidityETH() external payable {
+        require(msg.sender == smartcontract_owner, "Only the smart contract owner may access this function");
+        require(msg.value>0,"Please enter a valid amount");
+        IWETH(WETH).deposit{value: msg.value}();
+        assert(IWETH(WETH).transfer(guild_pool_address, msg.value));
+        guild_pool.sync();
+    }
+
+    function creatorAddLiquidityTokens(uint amount) external{
+      require(msg.sender == smartcontract_owner, "Only the smart contract owner may access this function");
+      require(amount>0, "Please enter a valid amount");
+      TransferHelper.safeTransferFrom(guild_token_address, msg.sender, guild_pool_address, amount);
+      guild_pool.sync();
+    }
 
     //allows users to purchase the guild token
     function purchaseGuildToken(uint amount) public payable{

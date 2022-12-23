@@ -6,8 +6,8 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import './GuildToken.sol';
 import './IGuildLiquidityPool.sol';
-import '../Utils/Initializable.sol';
-import '../Utils/UQ112x112.sol';
+import './Utils/Initializable.sol';
+import './Utils/UQ112x112.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract GuildLiquidityPool is IGuildLiquidityPool,Initializable, ReentrancyGuard{
