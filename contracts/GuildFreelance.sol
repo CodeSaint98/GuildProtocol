@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./GuildToken.sol";
+import "./IGuildLiquidityPool.sol";
 
 contract GuildFreelancer {
     /*
@@ -31,8 +32,10 @@ contract GuildFreelancer {
     */
     // STATE VARIABLES
     address public guild_token_address;
+    address public guild_pool_address;
     uint public time_limit;
     GuildToken private guild_token;
+    IGuildLiquidityPool private guild_pool;
     constructor(
         address _guild_token_address,
         uint _time_limit
@@ -44,9 +47,31 @@ contract GuildFreelancer {
         time_limit = _time_limit;
     }
 
+    function setGuildPool(address _guild_pool_address) public{
+      require(_guild_pool_address != address(0), "Zero address detected");
+      guild_pool_address = _guild_pool_address;
+      guild_pool = IGuildLiquidityPool(_guild_pool_address);
+    }
+
+   //returns guild token price with a precision of 1e6
+    function guild_token_price() internal view returns(uint256){
+      uint reserve0;
+      uint reserve1;
+      uint _eth_usd_price = 1227990000;
+      (reserve0, reserve1, ) = guild_pool.getReserves();
+      if(reserve0 == 0 || reserve1 == 0){
+         return 1;
+      }
+      return ((_eth_usd_price*reserve1)/reserve1);
+}
+
     //allows users to purchase the guild token
     function purchaseGuildToken(uint amount) public payable{
       require(amount !=0, "Zero value detected");
-      
+      uint _eth_usd_price = 1227990000;
+      uint _guild_price = guild_token_price();
+      uint _amount_usd = (msg.value * _eth_usd_price);
+      require(_amount_usd/_guild_price >= amount, "GUILD:INSUFFICIENT_INPUT");
+      guild_token.guildPoolMint(amount);
     }
 }

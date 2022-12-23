@@ -43,6 +43,10 @@ contract GuildToken is ERC20, Owned{
         guild_pool_address = _guild_pool_address;
     }
 
+    function guildPoolMint(uint amount) public onlyGuildPool{
+        super._mint(guild_pool_address,amount);
+    }
+
     function eth_usd_price() public pure returns(uint){
         return 1227990000;
     }
